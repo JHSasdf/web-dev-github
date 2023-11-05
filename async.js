@@ -25,7 +25,7 @@ async function readFile() {
   // fs.readFile('data.txt')는 프로미스라는 객체를 반환함. 읽어온 것에 대한 return값.
   // await는 프로미스를 반환하는 모든 메소드 앞에 적을 수 있다. await를 적으면 그 결과를 변수, 상수값에 저장할 수 있다. 이게 비동기 작업인 것처럼 그래서 try error를 사용할 수 있음.
   try {
-  fileData = await fs.readFile("data.txt") // line 28부터는 27이 실행될때까지 종료됨.
+  fileData = await fs.readFile("data.txt"); // line 28부터는 27이 실행될때까지 종료됨.
 } catch (error) { // try에서 error가 발생할 경우 readFile에서 자동으로 parameter에 오류 객체를 반환함
     console.log(error)
 }
@@ -33,7 +33,7 @@ async function readFile() {
       console.log(fileData.toString());
 
       //return anotherAsynoperation();
-      console.log("Hi there!"); // 이게 제일 먼저 실행됨. 이후에 data.txt를 parsing하고 나서 line 14, 15가 실행된다.
+      
 
   // 이런식으로 여러개의 then을 합치는 것도 가능
   //   fs.readFile("data.txt").then(function (fileData) {
@@ -41,9 +41,10 @@ async function readFile() {
   //     console.log(fileData.toString());
   //     return anotherAsyncfunction();
   //   }).then(function (result) {
-  //     console.log(result)
+  //     console.log(result) 
   //   });
 
 }
 
 readFile();
+console.log("Hi there!"); // 이게 제일 먼저 실행됨. 이후에 data.txt를 parsing하고 나서 line 14, 15가 실행된다.
