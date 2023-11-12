@@ -25,4 +25,3 @@ console.log(...inputNumbers);
 console.log(inputNumbers);
 
 console.log(sumUp);
-
