@@ -24,6 +24,12 @@ input {
   border: 1px solid rgb(204, 204, 204);
 }
 
+img {
+  width: 10rem;
+  height: 10rem;
+  object-fit: cover;
+}
+
 .btn {
   cursor: pointer;
   font: inherit;
