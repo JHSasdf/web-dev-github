@@ -124,17 +124,19 @@ router.get('/posts/:id/comments', async function (req, res) {
 // render는 template를 렌더링 하기 위한 내장 메소드
   res.json(comments);  // 서버 측에서 호출할 때는 데이터를 제이슨으로 인코딩해서 response로 보냄. 이를 comments.js에서 json으로 디코딩
   // 여기서 comments는 DB에서 가져온 collection 이름
+ 
 }); 
 
 router.post('/posts/:id/comments', async function (req, res) {
-  const postId = new ObjectId(req.params.id);
-  const newComment = {
-    postId: postId,
-    title: req.body.title,
-    text: req.body.text,
-  };
-  await db.getDb().collection('comments').insertOne(newComment);
-  res.redirect('/posts/' + req.params.id);
+  // const postId = new ObjectId(req.params.id);
+  // const newComment = {
+  //   postId: postId,
+  //   title: req.body.title,
+  //   text: req.body.text,
+  // };
+  // await db.getDb().collection('comments').insertOne(newComment);
+  // res.json({message: 'Comment added!'});
+  res.status(500).json({message: 'error!'})
 });
 
 module.exports = router;
