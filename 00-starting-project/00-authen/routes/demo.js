@@ -9,11 +9,31 @@ router.get("/", function (req, res) {
 });
 
 router.get("/signup", function (req, res) {
-  res.render("signup");
+  let sessionInputData = req.session.inputData;
+  if (!sessionInputData) {
+    sessionInputData = {
+      hasError: false,
+      email: '',
+      confirmEmail: '',
+      password: ''
+    };
+  }
+  req.session.inputData = null;
+
+  res.render("signup", { inputData: sessionInputData});
 });
 
 router.get("/login", function (req, res) {
-  res.render("login");
+  let sessionInputData = req.session.inputData;
+  if (!sessionInputData) {
+    sessionInputData = {
+      hasError: false,
+      email: '',
+      password: ''
+    };
+  }
+  req.session.inputData = null;
+  res.render("login", { inputData: sessionInputData});
 });
 
 router.post("/signup", async function (req, res) {
@@ -30,8 +50,18 @@ router.post("/signup", async function (req, res) {
     enteredEmail !== enteredConfirmEmail ||
     !enteredEmail.includes("@")
   ) {
-    console.log("Incorrect data!");
-    return res.redirect("/signup");
+    req.session.inputData = {
+      hasError: true,
+      message: 'Invalid input - please check your data.',
+      email: enteredEmail,
+      confirmEmail: enteredConfirmEmail,
+      password: enteredPassword
+    };
+    req.session.save(function() {
+      res.redirect("/signup");
+    });
+    return;
+      //return res.render('signup');
   }
 
   const existingUser = await db
@@ -40,8 +70,18 @@ router.post("/signup", async function (req, res) {
     .findOne({ email: enteredEmail });
 
   if (existingUser) {
-    console.log("User exists already");
-    return res.redirect("/signup");
+
+    req.session.inputData = {
+      hasError: true,
+      message: 'User exists already!',
+      email: enteredEmail,
+      confirmEmail: enteredConfirmEmail,
+      password: enteredPassword
+    };
+    req.session.save(function() {
+      res.redirect("/signup");
+    });
+    return;
   }
 
   const hashedPassword = await bcrypt.hash(enteredPassword, 12);
@@ -67,8 +107,16 @@ router.post("/login", async function (req, res) {
     .findOne({ email: enteredEmail });
 
   if (!existingUser) {
-    console.log("Could not log in!");
-    return res.redirect("/login");
+    req.session.inputData = {
+      hasError: true,
+      message: 'Could not log you in - please check your credentials!',
+      email: enteredEmail,
+      password: enteredPassword
+    };
+    req.session.save(function() {
+      res.redirect("/login", {});
+    })
+    return;
   }
   const passwordsAreEqual = await bcrypt.compare(
     enteredPassword,
@@ -76,19 +124,58 @@ router.post("/login", async function (req, res) {
   ); // 같으면 true  반환
 
   if (!passwordsAreEqual) {
-    console.log("Could not log in - passwords are not equal!");
-    return res.redirect("/login");
+    req.session.inputData = {
+      hasError: true,
+      message: 'Could not log you in - please check your credentials!',
+      email: enteredEmail,
+      password: enteredPassword
+    };
+    req.session.save(function() {
+      res.redirect("/login");
+    });
+    return;
   }
 
+
   console.log("User is authenticated!");
-  res.redirect("/admin");
+
+  req.session.user = { id: existingUser._id, email: existingUser.email }; // 64번째줄에서 데이터베이스에서 가져온 정보가 세션 컬렉션에 저장
+  req.session.isAuthenticated = true;
+  // 이 세션에 연결된 요청이 인증된 요청임을 알려주는 것
+  req.session.save(function() {
+    res.redirect("/profile");
+  });
+
 });
 
-router.get("/admin", function (req, res) {
+router.get("/admin", async function (req, res) {
   // Check the user "ticket"
+  if (!res.locals.isAuth) { // if (!req.session.user)
+    return res.status(401).render('401'); 
+  }
+
+  // const user = await db.getDb().collection('users').findOne({_id: req.session.user.id});
+
+  if (!res.locals.isAdmin) {
+    return res.status(403).render('403');
+  }
   res.render("admin");
 });
 
-router.post("/logout", function (req, res) {});
+router.get("/profile", function (req, res) {
+  // Check the user "ticket"
+  if (!res.locals.isAuth) { // if (!req.session.user)
+    return res.status(401).render('401'); 
+  }
+
+  res.render("profile");
+});
+
+
+router.post("/logout", function (req, res) {
+  req.session.user = null;
+  req.session.isAuthenticated = false;
+  res.redirect('/');
+});
 
 module.exports = router;
