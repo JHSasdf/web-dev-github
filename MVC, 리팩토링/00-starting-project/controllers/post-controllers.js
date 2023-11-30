@@ -7,20 +7,17 @@ function getHome(req, res) {
 }
 
 async function getAdmin(req, res) {
-  if (!res.locals.isAuth) {
-    return res.status(401).render("401");
-  }
 
   const posts = await Post.fetchAll();
 
   sessionErrorData = validationSession.getSessionErrorData(req, {
-    title: '',
-    content: ''
+    title: "",
+    content: "",
   });
 
   res.render("admin", {
     posts: posts,
-    inputData: sessionErrorData
+    inputData: sessionErrorData,
   });
 }
 
@@ -49,17 +46,19 @@ async function createPost(req, res) {
   res.redirect("/admin");
 }
 
-async function getSinglePost(req, res) {
-  const post = new Post(null, null, req.params.id);
-  await post.fetch();
-
-  if (!post.title || !post.content) {
-    return res.render("404"); // 404.ejs is missing at this point - it will be added later!
+async function getSinglePost(req, res, next) {
+  let post;
+  try {
+    post = new Post(null, null, req.params.id);
+  } catch (error) {
+    // return next(error);
+    return res.render('404');
   }
+  await post.fetch();
 
   sessionErrorData = validationSession.getSessionErrorData(req, {
     title: post.title,
-    content: post.content
+    content: post.content,
   });
 
   res.render("single-post", {
