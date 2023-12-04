@@ -3,6 +3,12 @@ function createUserSession(req, user, action) { // user는 mongodb에서 오는 
     req.session.save(action);
 }
 
+function destroyUserAuthSession(req) {
+    req.session.uid = null;
+    
+}
+
 module.exports = {
-    createUserSession: createUserSession
+    createUserSession: createUserSession,
+    destroyUserAuthSession: destroyUserAuthSession
 }
