@@ -58,14 +58,15 @@ async function updateProduct(req, res, next) {
 }
 
 async function deleteProduct(req, res, next) {
+    let product;
     try {
-        const product = await Product.findById(req.params.id);
+        product = await Product.findById(req.params.id);
         await product.deleteData();
     }catch (error) {
         next(error);
         return;
     }
-    res.redirect('/admin/products');
+    res.json({ message: 'Delete product!'});
 }
 module.exports = {
     getProducts: getProducts,

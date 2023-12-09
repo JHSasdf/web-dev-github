@@ -9,7 +9,7 @@ router.get("/", function (req, res) {
 });
 
 router.get("/signup", function (req, res) {
-  let sessionInputData = req.session.inputData;
+  let sessionInputData = req.session.inputData; // 이건 데이터베이스에 있는 자료라서 이런 문법으로 수정할 수 없기 때문에 sessionInputData에는 깊은 복사가 들어간다.
   if (!sessionInputData) {
     sessionInputData = {
       hasError: false,
