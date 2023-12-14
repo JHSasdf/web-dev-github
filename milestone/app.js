@@ -20,6 +20,7 @@ const productRoutes = require('./routes/products.routes');
 const baseRoutes = require('./routes/base.routes');
 const adminRoutes = require('./routes/admin.routes');
 const cartRoutes = require('./routes/cart.routes');
+const orderRoutes = require('./routes/orders.routes');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname + '/views'));
@@ -48,6 +49,7 @@ app.use(productRoutes);
 app.use(protectRoutesMiddleware);
 
 app.use('/admin', adminRoutes);
+app.use('/orders', orderRoutes);
 
 app.use(errorHandlerMiddleware);
 

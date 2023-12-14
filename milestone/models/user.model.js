@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs'); // 3자 먼저
-
+const mongodb = require('mongodb');
 const db = require('../data/database');
 
 class User {
@@ -13,6 +13,12 @@ class User {
             city: city
         };
     }
+    static async findById(userId) {
+        const uid = new mongodb.ObjectId(userId);
+
+        return db.getDb().collection('users').findOne({_id: uid}, { projection: { password: 0} });
+    }
+
     getUserWithSameEmail() {
         return db.getDb().collection('users').findOne({ email: this.email})
     }
