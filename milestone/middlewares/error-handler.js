@@ -2,10 +2,10 @@ function handleErrors (error, req, res, next) { // 첫번째 argument는 오류�
     console.log(error);
 
     if (error.code === 404) {
-        return res.status(404).render('shared/404');
+        return res.redirect('/404')
     }
 
-    res.status(500).render('shared/500');
+    return res.status(500).render('shared/500');
 }
 
-module.exports = handleErrors;
+module.exports = handleErrors; 

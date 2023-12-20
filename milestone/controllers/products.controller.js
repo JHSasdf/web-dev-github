@@ -14,7 +14,7 @@ async function getProductDetails(req, res, next) {
         const product = await Product.findById(req.params.id);
         res.render('customer/products/product-details', {product: product})
     }catch(err) {
-        next(error);
+        next(err);
     }
 }
 
